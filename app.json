@@ -1,14 +1,19 @@
 {
   "expo": {
-    "name": "app-animal",
-    "slug": "app-animal",
+    "name": "Olhar Selvagem",
+    "slug": "olhar-selvagem",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "appanimal",
-    "userInterfaceStyle": "automatic",
+    "scheme": "olharselvagem",
+    "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Permita o acesso à câmera para fotografar animais encontrados.",
+        "NSPhotoLibraryUsageDescription": "Permita escolher fotos dos animais na biblioteca.",
+        "NSLocationWhenInUseUsageDescription": "A localização identifica onde cada animal foi encontrado."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,15 +22,19 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": ["CAMERA", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",
+      ["expo-camera", { "cameraPermission": "Permita fotografar animais encontrados." }],
+      ["expo-image-picker", { "photosPermission": "Permita escolher fotos dos animais na biblioteca." }],
+      ["expo-location", { "locationWhenInUsePermission": "A localização identifica onde cada animal foi encontrado." }],
       [
         "expo-splash-screen",
         {
