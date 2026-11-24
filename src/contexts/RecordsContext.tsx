@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { notifyRecordSaved } from '@/services/notifications';
 import type { AnimalRecord, DraftAnimal } from '@/@types/animal';
-import { loadRecords, saveRecord } from '@/services/recordsStorage';
+import { loadRecords, saveRecord, deleteRecord } from '@/services/recordsStorage';
 
 interface RecordsContextValue {
   records: AnimalRecord[];
@@ -8,6 +9,7 @@ interface RecordsContextValue {
   error: string | null;
   reload: () => Promise<void>;
   addRecord: (draft: DraftAnimal) => Promise<AnimalRecord>;
+  removeRecord: (id: string) => Promise<void>;
 }
 
 const RecordsContext = createContext<RecordsContextValue | null>(null);
@@ -22,7 +24,8 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
     try {
       setRecords(await loadRecords());
       setError(null);
-    } catch {
+    } catch (cause) {
+      console.warn('Falha ao carregar galeria:', cause);
       setError('Não foi possível abrir sua galeria. Tente novamente.');
     } finally {
       setLoading(false);
@@ -35,10 +38,18 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
     const record = await saveRecord(draft);
     setRecords((current) => [record, ...current]);
     setError(null);
+    // A falha de uma notificação não desfaz um registro já salvo.
+    void notifyRecordSaved(record.id);
     return record;
   }, []);
 
-  const value = useMemo(() => ({ records, loading, error, reload, addRecord }), [records, loading, error, reload, addRecord]);
+  const removeRecord = useCallback(async (id: string) => {
+    await deleteRecord(id);
+    setRecords((current) => current.filter((record) => record.id !== id));
+    setError(null);
+  }, []);
+
+  const value = useMemo(() => ({ records, loading, error, reload, addRecord, removeRecord }), [records, loading, error, reload, addRecord, removeRecord]);
   return <RecordsContext.Provider value={value}>{children}</RecordsContext.Provider>;
 }
 

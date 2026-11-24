@@ -1,0 +1,19 @@
+OLHAR SELVAGEM — APRESENTAÇÃO
+
+olhar-selvagem.pdf: apresentação pronta, com 12 slides em formato 16:9.
+index.html: versão interativa; abra no navegador, sem servidor ou internet.
+Use as setas esquerda/direita ou os botões para navegar. Há um botão de tela cheia.
+
+imagens/: as cinco capturas fornecidas, copiadas dos assets do projeto.
+previews/: imagens dos slides e visão geral para conferência.
+texto-conferencia.txt: texto extraído do PDF para revisão.
+
+Para editar e gerar novamente:
+1. Edite os textos e o estilo em montar.py.
+2. Execute: python3 apresentacao/montar.py
+3. Execute: bash apresentacao/gerar-pdf.sh
+O gerador do PDF requer Google Chrome instalado.
+
+Os exemplos de código são simplificados a partir do projeto.
+O compartilhamento entre usuários é apresentado como objetivo da solução;
+o protótipo atual armazena os registros localmente.

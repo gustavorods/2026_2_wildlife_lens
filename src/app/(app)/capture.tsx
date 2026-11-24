@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, Image, Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Image, Modal, Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { AppButton } from '@/components/AppButton';
 import { CameraPanel } from '@/components/CameraPanel';
 import { InfoBanner } from '@/components/InfoBanner';
@@ -16,10 +16,12 @@ type Coordinates = { latitude: number; longitude: number };
 export default function CaptureScreen() {
   const router = useRouter();
   const desktop = useWindowDimensions().width >= 900;
+  const cameraEnabled = Platform.OS !== 'web';
   const { addRecord } = useRecords();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const showCamera = cameraEnabled && cameraOpen;
   const [locationLoading, setLocationLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -54,9 +56,10 @@ export default function CaptureScreen() {
       const record = await addRecord({ imageUri, ...coordinates });
       setConfirmOpen(false);
       router.replace(`/animal/${record.id}`);
-    } catch {
+    } catch (cause) {
+      console.warn('Falha ao salvar registro:', cause);
       setConfirmOpen(false);
-      setError('Não foi possível salvar o registro. Verifique o espaço disponível e tente novamente.');
+      setError('Não foi possível salvar o registro. A foto ainda não foi adicionada à galeria. Tente novamente.');
     } finally { setSaving(false); }
   }
 
@@ -69,8 +72,8 @@ export default function CaptureScreen() {
     <View style={[styles.columns, !desktop && styles.mobileColumns]}>
       <View style={[styles.photoColumn, !desktop && styles.fullWidth]}>
         <View style={styles.sectionLabel}><View style={styles.step}><Text style={styles.stepText}>01</Text></View><Text style={styles.sectionTitle}>Foto do animal</Text></View>
-        {cameraOpen ? <CameraPanel onPhoto={onPhoto} onClose={() => setCameraOpen(false)} /> : imageUri ? <View style={styles.previewWrap}><Image source={{ uri: imageUri }} style={styles.preview} resizeMode="cover" /><View style={styles.previewBadge}><Ionicons name="checkmark-circle" size={15} color={colors.green} /><Text style={styles.previewBadgeText}>FOTO SELECIONADA</Text></View></View> : <View style={styles.placeholder}><View style={styles.photoIcon}><Ionicons name="camera-outline" size={32} color={colors.green} /></View><Text style={styles.placeholderTitle}>Seu próximo encontro começa com uma foto</Text><Text style={styles.placeholderText}>Use a câmera ou escolha uma imagem que já está no dispositivo.</Text></View>}
-        {!cameraOpen && <View style={styles.photoActions}><AppButton label={imageUri ? 'Tirar outra foto' : 'Abrir câmera'} icon="camera-outline" onPress={() => { setError(null); setCameraOpen(true); }} style={styles.actionButton} /><AppButton label="Escolher da galeria" icon="images-outline" variant="secondary" onPress={() => void choosePhoto()} style={styles.actionButton} /></View>}
+        {showCamera ? <CameraPanel onPhoto={onPhoto} onClose={() => setCameraOpen(false)} /> : imageUri ? <View style={styles.previewWrap}><Image source={{ uri: imageUri }} style={styles.preview} resizeMode="cover" /><View style={styles.previewBadge}><Ionicons name="checkmark-circle" size={15} color={colors.green} /><Text style={styles.previewBadgeText}>FOTO SELECIONADA</Text></View></View> : <View style={styles.placeholder}><View style={styles.photoIcon}><Ionicons name={cameraEnabled ? "camera-outline" : "images-outline"} size={32} color={colors.green} /></View><Text style={styles.placeholderTitle}>Seu próximo encontro começa com uma foto</Text><Text style={styles.placeholderText}>{cameraEnabled ? 'Use a câmera ou escolha uma imagem que já está no dispositivo.' : 'Escolha uma imagem salva no dispositivo.'}</Text></View>}
+        {!showCamera && <View style={styles.photoActions}>{cameraEnabled && <AppButton label={imageUri ? 'Tirar outra foto' : 'Abrir câmera'} icon="camera-outline" onPress={() => { setError(null); setCameraOpen(true); }} style={styles.actionButton} />}<AppButton label={cameraEnabled ? "Escolher da galeria" : "Escolher imagem"} icon="images-outline" variant={cameraEnabled ? "secondary" : "primary"} onPress={() => void choosePhoto()} style={styles.actionButton} /></View>}
       </View>
 
       <View style={[styles.detailsColumn, !desktop && styles.fullWidth]}>
@@ -80,11 +83,11 @@ export default function CaptureScreen() {
           {imageUri && !locationLoading && <Pressable onPress={() => void locate()} style={styles.refresh}><Ionicons name="refresh-outline" size={15} color={colors.green} /><Text style={styles.refreshText}>{coordinates ? 'Atualizar localização' : 'Tentar obter localização'}</Text></Pressable>}
         </View>
         {error && <View style={styles.error}><InfoBanner message={error} /></View>}
-        <View style={styles.saveCard}><View style={styles.saveTop}><Ionicons name="shield-checkmark-outline" size={20} color={colors.green} /><Text style={styles.saveTitle}>Pronto para guardar?</Text></View><Text style={styles.saveDescription}>Seu registro ficará salvo somente neste dispositivo ou navegador.</Text><AppButton label="Salvar registro" icon="checkmark" disabled={!imageUri || !coordinates || locationLoading} onPress={() => setConfirmOpen(true)} style={styles.saveButton} /></View>
+        <View style={styles.saveCard}><View style={styles.saveTop}><Ionicons name="shield-checkmark-outline" size={20} color={colors.green} /><Text style={styles.saveTitle}>Pronto para guardar?</Text></View><Text style={styles.saveDescription}>Seu registro ficará salvo somente neste dispositivo ou navegador.</Text>{imageUri && !coordinates && <Text accessibilityRole="alert" style={styles.saveDescription}>{locationLoading ? 'Aguarde a localização para poder salvar a foto.' : 'A foto ainda não foi salva. Ative a localização e toque em “Tentar obter localização” acima.'}</Text>}<AppButton label="Salvar registro" icon="checkmark" disabled={!imageUri || !coordinates || locationLoading} onPress={() => setConfirmOpen(true)} style={styles.saveButton} /></View>
       </View>
     </View>
 
-    <Modal visible={confirmOpen} transparent animationType="fade" onRequestClose={() => !saving && setConfirmOpen(false)}><View style={styles.modalOverlay}><View style={styles.modalCard}><View style={styles.modalIcon}><Ionicons name="paw" size={28} color={colors.green} /></View><Text style={styles.modalTitle}>Salvar este encontro?</Text><Text style={styles.modalDescription}>A foto, as coordenadas e a data serão adicionadas à sua galeria.</Text><View style={styles.modalActions}><AppButton label="Cancelar" variant="secondary" onPress={() => setConfirmOpen(false)} disabled={saving} style={styles.modalButton} /><AppButton label="Confirmar e salvar" onPress={() => void save()} loading={saving} style={styles.modalButton} /></View></View></View></Modal>
+    <Modal visible={confirmOpen} transparent animationType="fade" onRequestClose={() => { if (!saving) setConfirmOpen(false); }}><View style={styles.modalOverlay}><View style={styles.modalCard}><View style={styles.modalIcon}><Ionicons name="paw" size={28} color={colors.green} /></View><Text style={styles.modalTitle}>Salvar este encontro?</Text><Text style={styles.modalDescription}>A foto, as coordenadas e a data serão adicionadas à sua galeria.</Text><View style={styles.modalActions}><AppButton label="Cancelar" variant="secondary" onPress={() => setConfirmOpen(false)} disabled={saving} style={styles.modalButton} /><AppButton label="Confirmar e salvar" onPress={() => void save()} loading={saving} style={styles.modalButton} /></View></View></View></Modal>
   </View>;
 }
 

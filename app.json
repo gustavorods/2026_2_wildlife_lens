@@ -23,7 +23,11 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "permissions": ["CAMERA", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+      "permissions": [
+        "CAMERA",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -32,9 +36,27 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-camera", { "cameraPermission": "Permita fotografar animais encontrados." }],
-      ["expo-image-picker", { "photosPermission": "Permita escolher fotos dos animais na biblioteca." }],
-      ["expo-location", { "locationWhenInUsePermission": "A localização identifica onde cada animal foi encontrado." }],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permita fotografar animais encontrados.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permita escolher fotos dos animais na biblioteca.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "A localização identifica onde cada animal foi encontrado."
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -42,7 +64,9 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-sqlite",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true

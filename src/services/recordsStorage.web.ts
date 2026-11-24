@@ -3,6 +3,21 @@ import type { AnimalRecord, DraftAnimal } from '@/@types/animal';
 const DATABASE = 'olhar-selvagem';
 const STORE = 'animals';
 
+export async function deleteRecord(id: string): Promise<void> {
+  const db = await openDatabase();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(STORE, 'readwrite');
+      transaction.objectStore(STORE).delete(id);
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error ?? new Error('A exclusão foi cancelada.'));
+    });
+  } finally {
+    db.close();
+  }
+}
+
 function openDatabase(): Promise<IDBDatabase> {
   if (typeof indexedDB === 'undefined') {
     return Promise.reject(new Error('Este navegador não oferece armazenamento local.'));

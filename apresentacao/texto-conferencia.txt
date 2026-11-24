@@ -1,0 +1,326 @@
+olhar.                                                                            REGISTRAR • LOCALIZAR • INFORMAR
+
+
+
+
+A P L I C AT I V O D E R E G I S T R O D E A N I M A I S
+
+
+
+
+Olhar                                                                               ◎
+Selvagem.                                                                    F O TO + L O C A L + D ATA
+
+
+
+
+                                                                            Observar.
+Uma foto e uma localização para dar visibilidade aos                        Registrar.
+encontros com animais potencialmente perigosos.
+                                                                            Compartilhar.
+  React Native + Expo               SQLite            Recursos do celular
+
+
+
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                             01
+olhar.                                                                                                                                            0 1 / A P R O P O S TA
+
+
+
+
+POR QUE ESTE PROJETO?
+
+
+
+Informação sobre o animal
+e o lugar.
+     01                                                          02                                                        03
+
+     Registrar                                                   Compartilhar                                              Consultar
+     Fotografar o animal e associar a                            A proposta é permitir que outras                          Ajudar a comunidade a conhecer os
+     imagem à localização e à data do                            pessoas vejam a foto do animal e                          avistamentos e os possíveis riscos
+     encontro.                                                   onde ele foi encontrado.                                  de uma região.
+
+
+
+     Cenários que motivam a ideia: encontros com jacarés em regiões dos Estados Unidos e com animais peçonhentos ou perigosos
+     na Austrália.
+
+O protótipo demonstra o registro local. O compartilhamento entre usuários depende de uma futura integração com servidor.
+
+
+
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                                                                  02
+olhar.                                                                                                               02 / ACESSO
+
+
+
+
+AUTENTICAÇÃO
+
+
+
+Login com a API do professor Kleber.
+O app envia usuário e senha para a API e restaura os dados da sessão ao ser aberto
+novamente.
+
+
+     API                                                             DEMO
+
+     Integração preparada                                            Apresentação sem bloqueio
+     Uma requisição POST envia as credenciais. A resposta            Diante do erro de CORS relatado no navegador, usamos o
+     identifica o usuário autenticado.                               modo de demonstração para apresentar os recursos do app.
+
+
+
+     O que é CORS? Uma regra do navegador que depende da autorização do servidor para chamadas entre origens diferentes. O
+     modo demo cria uma sessão local e não autentica na API.
+
+
+
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                             03
+olhar.                                                                                                  PA S S O 1 / 5
+
+
+
+
+NA PRÁTICA
+
+
+
+Começar pela galeria.
+A tela inicial reúne os registros feitos no aplicativo.
+
+  01        Galeria vazia
+            Antes do primeiro uso, a tela convida a registrar um animal.
+
+  02        Novo encontro
+            Toque em “Registrar meu primeiro animal” ou no botão +.
+
+
+
+
+                                                                           Imagem 1 · Início do fluxo
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                 04
+olhar.                                                                                                            PA S S O 2 / 5
+
+
+
+
+NA PRÁTICA
+
+
+
+Escolher como fotografar.
+O usuário inicia um registro com uma imagem do animal.
+
+  01        Câmera
+            “Abrir câmera” permite tirar uma foto naquele momento.
+
+  02        Galeria
+            Também é possível escolher uma imagem já existente no
+            aparelho.
+
+  03        Localização
+            O app solicita acesso à localização para associar as coordenadas
+            ao encontro.
+
+                                                                               Imagem 2 · Captura e localização
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                           05
+olhar.                                                                                                                    PA S S O 3 / 5
+
+
+
+
+NA PRÁTICA
+
+
+
+Conferir a imagem.
+A foto selecionada aparece antes de salvar o registro.
+
+  01        Prévia
+            O usuário confere se a imagem representa o encontro.
+
+  02        Troca da foto
+            Se necessário, pode tirar outra foto ou escolher uma nova
+            imagem.
+
+
+
+
+                                                                        Imagem 3 · Foto selecionada · animal doméstico usado no teste
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                                     06
+olhar.                                                                                                                 PA S S O 4 / 5
+
+
+
+
+NA PRÁTICA
+
+
+
+Salvar e receber o aviso.
+Após salvar, o app apresenta os detalhes e uma notificação
+local.
+
+  01        Registro completo
+            A foto fica associada à latitude, à longitude e à data.
+
+  02        Confirmação
+            “Registro salvo!” demonstra a integração com as notificações do
+            celular.
+
+
+
+                                                                              Imagem 4 · Detalhes e notificação recebida
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                                07
+olhar.                                                                                                       PA S S O 5 / 5
+
+
+
+
+NA PRÁTICA
+
+
+
+Consultar o encontro.
+O registro salvo passa a fazer parte da galeria do aplicativo.
+
+  01        Visualização
+            O cartão mostra a foto, a data e as coordenadas.
+
+  02        Detalhes e exclusão
+            Abra o encontro para consultar seus dados. A versão atual
+            também permite apagar a foto com confirmação.
+
+
+
+
+                                                                        Imagem 5 · Galeria com um registro
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                      08
+olhar.                                                                                                                                             03 / ARMAZENAMENTO
+
+
+
+
+SQLITE + ARQUIVOS LOCAIS
+
+
+
+Fechou o app?
+O registro continua salvo.
+     SQLite                                                                                    Arquivo
+
+     Dados do encontro                                                                         A imagem no celular
+     O banco olhar-selvagem.db guarda ID, caminho da foto,                                     A foto é copiada para a pasta interna animals/. O SQLite
+     latitude, longitude e data. Ao reabrir, o app consulta a tabela                           guarda o caminho desse arquivo, e não a imagem em si.
+     animals.
+
+
+
+
+                                            Foto na pasta do app   →     Caminho + dados no SQLite                 →          Galeria ao reabrir
+
+No celular: SQLite. Na versão web: IndexedDB. Os registros são locais e não são enviados automaticamente a outros usuários.
+
+
+
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                                                                09
+olhar.                                                                                                                                        04 / NOTIFICAÇÕES
+
+
+
+
+DEMONSTRAÇÃO DO RECURSO
+
+
+
+Salvou um registro?
+O app envia uma notificação.
+A notificação local confirma a ação e demonstra o uso do recurso no celular.
+
+
+                Registro salvo!
+      ♪ Eba! Mais um encontro guardado na sua galeria.                                                                           agora
+
+
+
+
+    QUANDO                                                                                    CONDIÇÃO
+
+    Depois de salvar                                                                          Permissão do usuário
+    O app primeiro grava o registro e, em seguida, solicita a                                 O aviso e o som dependem da autorização e das configurações
+    notificação com som padrão.                                                               do celular. A foto permanece salva se a notificação falhar.
+
+
+Nesta demonstração, o aviso é disparado pelo próprio aparelho. Alertas sobre avistamentos de outras pessoas ficam como evolução do projeto.
+
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                                                          10
+olhar.                                                                                                            05 / CÓDIGO · CÂMERA
+
+
+
+
+PERMISSÕES · EXEMPLO SIMPLIFICADO
+
+
+
+Antes da foto, pedimos permissão.
+      import { Camera } from 'expo-camera';
+
+
+      let permission = await Camera.getCameraPermissionsAsync();
+      if (!permission.granted && permission.canAskAgain) {
+           permission = await Camera.requestCameraPermissionsAsync();
+      }
+
+
+      if (!permission.granted) return;
+
+
+     Como funciona?
+     Primeiro consultamos a permissão. Se ainda não foi concedida e o sistema permite perguntar, mostramos a solicitação. A
+     câmera só pode ser usada quando o acesso é autorizado.
+
+Se o acesso estiver bloqueado, o app orienta a abertura das configurações. Base: StartupPermissions.native.tsx.
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                                 11
+olhar.                                                                                                                                              06 / CÓDIGO · NOTIFICAÇÕES
+
+
+
+
+PERMISSÕES · EXEMPLO SIMPLIFICADO
+
+
+
+O usuário também autoriza os avisos.
+      import * as Notifications from 'expo-notifications';
+      import { prepareNotifications } from '@/services/notifications';
+
+      await prepareNotifications();
+      let permission = await Notifications.getPermissionsAsync();
+      if (!permission.granted && permission.canAskAgain) {
+           permission = await Notifications.requestPermissionsAsync();
+      }
+
+
+     Como funciona?
+     Preparamos o canal no Android, consultamos a autorização e solicitamos acesso quando necessário. Depois de salvar um
+     encontro, o app usa essa permissão para exibir a notificação local.
+
+A preparação usa o canal padrão se a criação do canal personalizado falhar no Expo Go. Base: notifications.native.ts e StartupPermissions.native.tsx.
+
+O L H A R S E LVA G E M · P R O J E T O M O B I L E                                                                                                                         12
+

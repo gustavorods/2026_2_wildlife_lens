@@ -1,1 +1,1 @@
-export { loadRecords, saveRecord } from './recordsStorage.native';
+export { loadRecords, saveRecord, deleteRecord } from './recordsStorage.native';
